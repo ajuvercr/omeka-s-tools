@@ -115,6 +115,7 @@ describe("log", () => {
     delete templates.items[newDevice.idx];
     const deviceCheck = await templates.get_item(newDevice.idx, false);
     expect(deviceCheck.item["dcterms:title"]).toEqual("epic newest device!");
+    expect(deviceCheck.item_set).toBeDefined();
   });
 
   test("env works", () => {

@@ -94,7 +94,7 @@ export class Factory<T extends Thing> {
       }
     }
 
-    const item_set_obj = json["o:item_set"];
+    const [item_set_obj ] = json["o:item_set"];
     item.id = json["@id"];
     item.idx = json["o:id"];
     item.factory = this;
@@ -110,7 +110,7 @@ export class Factory<T extends Thing> {
 
     const json = <{ [label: string]: any }>await resp.json();
 
-    const item_set_obj = json["o:item_set"];
+    const [ item_set_obj ] = json["o:item_set"];
     return new Item(
       json["@id"],
       json["o:id"],
