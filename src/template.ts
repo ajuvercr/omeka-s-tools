@@ -1,6 +1,6 @@
 import { OmekaConfig } from "./config";
 import { Factory, Property } from "./factory";
-import { Item } from "./thing";
+import { Item, Thing } from "./thing";
 import { findNextUrl, getLoggerFor } from "./utils";
 
 const logger = getLoggerFor("template");
@@ -159,6 +159,51 @@ export class OmekaTemplates {
     const factory = new Factory(template, this.config);
     await factory.fill_item(json, deep, this, item);
     return item;
+  }
+
+  async get_items_set(item_set: number): Promise<Item<any>[]> {
+    const items: Thing[] = [];
+    let url: string | undefined = this.config.url("items", {
+      item_set_id: item_set,
+    });
+
+    while (!!url) {
+      logger.debug("Fetching url " + url);
+      const resp = await this.config.fetch_f(url);
+      url = findNextUrl(resp);
+      const things = await resp.json();
+      items.push(...things);
+    }
+
+    const factories: { [id: number]: Factory<any> } = {};
+    const loadable = [];
+    const out = [];
+
+    for (const thing of items) {
+      const id = thing["o:id"];
+      const item = new Item("", 0, <Factory<any>>(<unknown>undefined), {});
+      out.push(item);
+      this.items[id] = item;
+
+      const template_id = thing["o:resource_template"]["o:id"];
+
+      if (factories[template_id]) {
+        loadable.push({ item, factory: factories[template_id], thing });
+      } else {
+        logger.debug("Creating factory for template " + template_id);
+        const template = await this.get_template(template_id);
+        const factory = new Factory(template, this.config);
+        factories[template_id] = factory;
+        loadable.push({ item, factory, thing });
+      }
+    }
+
+    logger.debug("Filling " + loadable.length + "items");
+    for (const l of loadable) {
+      await l.factory.fill_item(l.thing, true, this, l.item);
+    }
+
+    return out;
   }
 
   set_item(item: Item<any>) {

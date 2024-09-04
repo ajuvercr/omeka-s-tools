@@ -5,6 +5,7 @@
         "target": "ES2022",
         "module": "ES2022",
         "moduleResolution": "node",
+        "declaration": true,
         "preserveConstEnums": true,
         "downlevelIteration": true,
         "skipLibCheck": true,

@@ -118,6 +118,18 @@ describe("log", () => {
     expect(deviceCheck.item_set).toBeDefined();
   });
 
+  test.only("Get items from item set", { timeout: 30000 }, async () => {
+    const config = new OmekaConfig({
+      api: "https://heron.libis.be/momu-test/api",
+      fetch_f: fetch,
+    });
+    const templates = new OmekaTemplates(config);
+    await templates.preload_partial_templates();
+
+    const items = await templates.get_items_set(34332);
+    expect(items.length).toBeGreaterThan(0);
+  });
+
   test("env works", () => {
     const config = new OmekaConfig({
       api: "https://heron.libis.be/momu-test/api",

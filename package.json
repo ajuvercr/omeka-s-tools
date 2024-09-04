@@ -1,6 +1,6 @@
 {
   "name": "omeka-s-tools",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "General tools for working with the omeka-s api",
   "type": "module",
   "main": "lib/index.js",
